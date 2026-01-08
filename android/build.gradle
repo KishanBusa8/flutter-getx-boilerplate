@@ -5,12 +5,31 @@ allprojects {
     }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    // Configure all subprojects to use consistent JVM targets
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_21
+                    targetCompatibility JavaVersion.VERSION_21
+                }
+            }
+        }
+        
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = '21'
+            }
+        }
+    }
 }
+
 subprojects {
-    project.evaluationDependsOn(":app")
+    project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {
